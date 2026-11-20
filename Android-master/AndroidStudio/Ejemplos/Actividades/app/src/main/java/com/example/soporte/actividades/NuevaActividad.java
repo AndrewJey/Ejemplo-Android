@@ -12,11 +12,12 @@ public class NuevaActividad extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_nueva_actividad);
         text = (TextView) findViewById(R.id.textView2);
-        Bundle bundle = getIntent().getExtras();//Se obtiene el bundle recibido desde la otra actividad
-        if (bundle.getString("texto").length() == 0) {
+        Bundle bundle = getIntent() != null ? getIntent().getExtras() : null;
+        String texto = bundle != null ? bundle.getString("texto") : null;
+        if (texto == null || texto.trim().isEmpty()) {
             text.setText("No escribiste nada");
         } else {
-            text.setText(bundle.getString("texto"));
+            text.setText(texto.trim());
         }
     }
 }

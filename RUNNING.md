@@ -38,3 +38,11 @@ Inventario y compilaciones locales del 2026-11-15. Una compilación correcta no 
 
 `.gitignore` excluye credenciales locales, estado del editor y salidas de las herramientas detectadas. No deja de versionar archivos que ya estaban en Git. Los manifiestos, archivos de bloqueo, recursos fuente y scripts de esquema forman parte del código.
 <!-- local-development:end -->
+
+
+<!-- improvements-20261119:start -->
+## Mejoras y verificación — 2026-11-19 (Corrección de NPE en Intent Extras y cierre seguro de recursos SQLite)
+
+- **Cambios:** Corregido doble `NullPointerException` en `NuevaActividad.java` cuando `getExtras()` o `texto` es nulo; implementado `onUpgrade` en `CrearBaseDatos.java`; añadida validación de campos vacíos y cierre de `Cursor`/`SQLiteDatabase`/`SQLiteOpenHelper` en bloques `finally` en `sqllite/MainActivity.java`.
+- **Validación:** Verificación estructural y de seguridad/recursos en los 3 archivos Java modificados.
+<!-- improvements-20261119:end -->

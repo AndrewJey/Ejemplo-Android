@@ -33,43 +33,60 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         listregistros=(ListView)findViewById(R.id.listView);
         ObtenerTelefonos();
     }
-    public void ObtenerTelefonos(){
-        try{
-            CrearBaseDatos telefonos = new CrearBaseDatos(this, "telefonos", null, 1);
-            SQLiteDatabase bd = telefonos.getWritableDatabase();
-            String query="Select * from telefono";
-            Cursor cursor = bd.rawQuery(query,null);
-            // looping through all rows and adding to list
-            ArrayList<String> registros=new ArrayList<String>();
+    public void ObtenerTelefonos() {
+        CrearBaseDatos telefonos = null;
+        SQLiteDatabase bd = null;
+        Cursor cursor = null;
+        try {
+            telefonos = new CrearBaseDatos(this, "telefonos", null, 1);
+            bd = telefonos.getReadableDatabase();
+            cursor = bd.rawQuery("SELECT id, telefono, version FROM telefono ORDER BY id DESC", null);
+            ArrayList<String> registros = new ArrayList<String>();
             if (cursor.moveToFirst()) {
                 do {
-                    registros.add("ID:"+Integer.parseInt(cursor.getString(0))+
-                                    "- Telefono:"+cursor.getString(1)+
-                                    "- Version:"+cursor.getString(2));
+                    registros.add("ID:" + cursor.getInt(0)
+                            + " - Teléfono:" + cursor.getString(1)
+                            + " - Versión:" + cursor.getString(2));
                 } while (cursor.moveToNext());
             }
-            ArrayAdapter<String> adapter= new ArrayAdapter<String>(this,android.R.layout.simple_list_item_1,registros);
+            ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, registros);
             listregistros.setAdapter(adapter);
-        }catch (Exception error){
-            Toast.makeText(this, error.toString(),
-                    Toast.LENGTH_SHORT).show();
+        } catch (Exception error) {
+            Toast.makeText(this, error.toString(), Toast.LENGTH_SHORT).show();
+        } finally {
+            if (cursor != null) cursor.close();
+            if (bd != null) bd.close();
+            if (telefonos != null) telefonos.close();
         }
     }
-    public void crear(String telefono,String version) {
+
+    public void crear(String telefono, String version) {
+        String telTrim = telefono != null ? telefono.trim() : "";
+        String verTrim = version != null ? version.trim() : "";
+        if (telTrim.isEmpty() || verTrim.isEmpty()) {
+            Toast.makeText(this, "Complete teléfono y versión antes de guardar.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        CrearBaseDatos telefonos = null;
+        SQLiteDatabase bd = null;
         try {
-            CrearBaseDatos telefonos = new CrearBaseDatos(this, "telefonos", null, 1);
-            SQLiteDatabase bd = telefonos.getWritableDatabase();
-            ContentValues registro = new ContentValues();  //es una clase para guardar datos
-            registro.put("telefono", telefono);
-            registro.put("version", version);
-            bd.insert("telefono", null, registro);
-            bd.close();
-            Toast.makeText(this, "Se cargaron los datos en la tabla",
-                    Toast.LENGTH_SHORT).show();
-            Limpiar();
-        }catch (Exception error){
-            Toast.makeText(this, error.toString(),
-                    Toast.LENGTH_SHORT).show();
+            telefonos = new CrearBaseDatos(this, "telefonos", null, 1);
+            bd = telefonos.getWritableDatabase();
+            ContentValues registro = new ContentValues();
+            registro.put("telefono", telTrim);
+            registro.put("version", verTrim);
+            long rowId = bd.insert("telefono", null, registro);
+            if (rowId != -1) {
+                Toast.makeText(this, "Se cargaron los datos en la tabla", Toast.LENGTH_SHORT).show();
+                Limpiar();
+            } else {
+                Toast.makeText(this, "No se pudo insertar el registro.", Toast.LENGTH_SHORT).show();
+            }
+        } catch (Exception error) {
+            Toast.makeText(this, error.toString(), Toast.LENGTH_SHORT).show();
+        } finally {
+            if (bd != null) bd.close();
+            if (telefonos != null) telefonos.close();
         }
     }
 

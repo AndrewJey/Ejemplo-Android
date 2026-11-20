@@ -21,6 +21,7 @@ public class CrearBaseDatos extends SQLiteOpenHelper {
     //borrar la tabla y crear la nueva tabla
     @Override
     public void onUpgrade(SQLiteDatabase db, int versionAnte, int versionNue) {
-
+        db.execSQL("DROP TABLE IF EXISTS telefono");
+        onCreate(db);
     }
 }
